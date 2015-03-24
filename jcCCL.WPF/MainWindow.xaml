@@ -1,0 +1,22 @@
+﻿<Controls:MetroWindow x:Class="jcCCL.WPF.MainWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:local="clr-namespace:jcCCL.WPF"
+    mc:Ignorable="d"
+    xmlns:Controls="http://metro.mahapps.com/winfx/xaml/controls"
+    xmlns:viewModel="clr-namespace:jcCCL.WPF.ViewModel"
+    ShowMaxRestoreButton="false"
+    Title="jcCCL" Height="350" ResizeMode="NoResize" Width="525">
+    
+    <Controls:MetroWindow.DataContext>
+        <viewModel:MainModel />
+    </Controls:MetroWindow.DataContext>
+    
+    <Grid x:Name="spMain" Drop="spMain_Drop" AllowDrop="True">        
+        <ProgressBar x:Name="pbMain" Visibility="{Binding PG_Visibility}" HorizontalAlignment="Stretch" IsIndeterminate="True" Margin="10,0,10,0" Height="40" />
+        
+        <Button IsEnabled="false" Visibility="{Binding BUTTON_Visibility}" Content="Drag and Drop a File here to compress or uncompress"  HorizontalAlignment="Stretch" />
+    </Grid>
+</Controls:MetroWindow>

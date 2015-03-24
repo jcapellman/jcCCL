@@ -1,0 +1,15 @@
+﻿<Controls:MetroWindow x:Class="jcCCL.WPF.InfoWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:viewModel="clr-namespace:jcCCL.WPF.ViewModel"
+        xmlns:Controls="http://metro.mahapps.com/winfx/xaml/controls"
+        Title="InfoWindow" Height="300" Width="300">
+
+    <Controls:MetroWindow.DataContext>
+        <viewModel:InfoWindowModel />
+    </Controls:MetroWindow.DataContext>
+    
+    <Grid>
+        
+    </Grid>
+</Controls:MetroWindow>
