@@ -1,9 +1,7 @@
-﻿using System.Collections.Generic;
-using System.Collections.Immutable;
+﻿using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
-using System.Threading;
 
 using jcCCL.PCL.Common;
 using jcCCL.PCL.Transports;
@@ -13,12 +11,12 @@ using Newtonsoft.Json.Bson;
 
 namespace jcCCL.PCL.Algorithms {
     public abstract class BaseJCCC {
-        private ImmutableList<jcCCDATAITEM> _bytes;
-        private ImmutableList<int> _dataList;
+        private readonly ConcurrentQueue<jcCCDATAITEM> _bytes;
+        private readonly ConcurrentQueue<int> _dataList;
 
-        public BaseJCCC() {
-            _bytes = ImmutableList<jcCCDATAITEM>.Empty;
-            _dataList = ImmutableList<int>.Empty;
+        protected BaseJCCC() {
+            _bytes = new ConcurrentQueue<jcCCDATAITEM>();
+            _dataList = new ConcurrentQueue<int>();
         }
 
         public abstract int GetVersion();
@@ -33,10 +31,10 @@ namespace jcCCL.PCL.Algorithms {
             var item = _bytes.FirstOrDefault(a => a.Hash == hash);
 
             if (item == null) {
-                _bytes = _bytes.Add(new jcCCDATAITEM { Hash = hash, Index = _bytes.Count(), Data = data });
-                _dataList = _dataList.Add(_bytes.Count());
+                _bytes.Enqueue(new jcCCDATAITEM { Hash = hash, Index = _bytes.Count(), Data = data });
+                _dataList.Enqueue(_bytes.Count());
             } else {
-                _dataList = _dataList.Add(item.Index);
+                _dataList.Enqueue(item.Index);
             }
         }
 
