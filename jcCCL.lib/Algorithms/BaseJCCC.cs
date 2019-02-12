@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 
 using jcCCL.lib.Common;
+using jcCCL.lib.Extensions;
 using jcCCL.lib.Transports;
 
 using Newtonsoft.Json;
@@ -27,7 +28,7 @@ namespace jcCCL.lib.Algorithms {
                 return;
             }
 
-            var hash = Helpers.Security.MD5Core.GetHashString(data);
+            var hash = data.ComputeMD5();
 
             var item = _bytes.FirstOrDefault(a => a.Hash == hash);
 
@@ -117,8 +118,9 @@ namespace jcCCL.lib.Algorithms {
             response.percentCompression = ((double)response.compressedData.Length / uncompressedData.Length);
             response.NewSize = response.compressedData.Length;
 
-            if (generateHash) {
-                response.Hash = Helpers.Security.MD5Core.GetHashString(response.compressedData);
+            if (generateHash)
+            {
+                response.Hash = response.compressedData.ComputeMD5();
             }
 
             return response;
