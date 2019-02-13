@@ -16,7 +16,7 @@ namespace jcCCL.lib {
             get {
                 var fullAssembly = GetType().AssemblyQualifiedName;
 
-                return Assembly.Load(new AssemblyName(fullAssembly.Split(',')[1]));
+                return Assembly.Load(new AssemblyName(fullAssembly?.Split(',')[1] ?? throw new InvalidOperationException()));
             }
         }
 
@@ -46,8 +46,7 @@ namespace jcCCL.lib {
             return GetVersion(versionNumber).DecompressFile(compressedData);
         }
 
-        public jcCCResponseItem CompressFile(string fileName, byte[] uncompressedData, int numberOfSlices, bool generateHash = true) {
-            return GetVersion().CompressFile(fileName, uncompressedData, numberOfSlices, generateHash);
-        }
+        public jcCCResponseItem CompressFile(string fileName, byte[] uncompressedData, int numberOfSlices, bool generateHash = true) => 
+            GetVersion().CompressFile(fileName, uncompressedData, numberOfSlices, generateHash);
     }
 }

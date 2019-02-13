@@ -23,7 +23,7 @@ namespace jcCCL.lib.Algorithms {
 
         public abstract int GetVersion();
 
-        private void addData(byte[] data) {
+        private void AddData(byte[] data) {
             if (data.Length == 0) {
                 return;
             }
@@ -40,12 +40,14 @@ namespace jcCCL.lib.Algorithms {
             }
         }
 
-        private byte[] getBytes(string argFileName) {
+        private byte[] GetBytes(string argFileName) {
             using (var ms = new MemoryStream()) {
+                var jsonSerializer = new JsonSerializer();
+
                 using (var writer = new BsonDataWriter(ms)) {
                     var file = new jcCCA {
                         Filename = argFileName,
-                        VersionNumber = Common.Constants.VERSION_NUMBER,
+                        VersionNumber = Constants.VERSION_NUMBER,
                         Data = new List<jcCCDATAITEM>()
                     };
 
@@ -54,9 +56,8 @@ namespace jcCCL.lib.Algorithms {
                     }
 
                     file.Patterns = _dataList.ToList();
-
-                    var serializer = new JsonSerializer();
-                    serializer.Serialize(writer, file);
+                    
+                    jsonSerializer.Serialize(writer, file);
 
                     ms.Flush();
 
@@ -67,14 +68,14 @@ namespace jcCCL.lib.Algorithms {
             }
         }
 
-        private void processFaster(byte[] uncompressedData, int numberOfSlices) {
-            var dictionarySize = uncompressedData.Length / numberOfSlices;
+        private void ProcessFaster(IReadOnlyList<byte> uncompressedData, int numberOfSlices) {
+            var dictionarySize = uncompressedData.Count / numberOfSlices;
 
-            for (var x = 0; x < uncompressedData.Length; x += dictionarySize) {
+            for (var x = 0; x < uncompressedData.Count; x += dictionarySize) {
                 var idx = x + dictionarySize;
 
-                if (idx > uncompressedData.Length) {
-                    idx = uncompressedData.Length - x;
+                if (idx > uncompressedData.Count) {
+                    idx = uncompressedData.Count - x;
                 }
 
                 var tmpData = new List<byte>();
@@ -83,11 +84,11 @@ namespace jcCCL.lib.Algorithms {
                     tmpData.Add(uncompressedData[y]);
                 }
 
-                addData(tmpData.ToArray());
+                AddData(tmpData.ToArray());
             }
         }
 
-        private void processSlower(byte[] uncompressedData, int numberOfSlices) {
+        private void ProcessSlower(byte[] uncompressedData, int numberOfSlices) {
             for (var x = 0; x < uncompressedData.Length; x += numberOfSlices) {
                 var idx = x + numberOfSlices;
 
@@ -101,7 +102,7 @@ namespace jcCCL.lib.Algorithms {
                     tmpData.Add(uncompressedData[y]);
                 }
 
-                addData(tmpData.ToArray());
+                AddData(tmpData.ToArray());
             }
         }
 
@@ -109,12 +110,12 @@ namespace jcCCL.lib.Algorithms {
             var response = new jcCCResponseItem { OriginalSize = uncompressedData.Length };
 
             if (useSlowerMethod) {
-                processSlower(uncompressedData, numberOfSlices);
+                ProcessSlower(uncompressedData, numberOfSlices);
             } else {
-                processFaster(uncompressedData, numberOfSlices);
+                ProcessFaster(uncompressedData, numberOfSlices);
             }
           
-            response.compressedData = getBytes(fileName);
+            response.compressedData = GetBytes(fileName);
             response.percentCompression = ((double)response.compressedData.Length / uncompressedData.Length);
             response.NewSize = response.compressedData.Length;
 
